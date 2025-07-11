@@ -2,35 +2,18 @@ import httpx
 import re
 import urllib.parse
 import time
-import yaml
 import os
 import sys
 from bs4 import BeautifulSoup
 
-# Load config from environment when running in GitHub Actions
-def load_config():
-    if 'TSDM_COOKIE' in os.environ:
-        return {
-            'account': [{
-                'cookie': os.environ['TSDM_COOKIE']
-            }],
-            'push': {
-                'bot_token': '',
-                'chat_id': ''
-            }
-        }
-    else:
-        with open("config/config.yaml", "r") as config_file:
-            return yaml.safe_load(config_file)
-
-config = load_config()
-
-bot_token = config['push']['bot_token']
-chat_id = config['push']['chat_id']
-
-account_cookies = config.get('account', [])
-first_account = account_cookies[0]
-cookie = first_account.get('cookie')
+# 直接从环境变量获取配置
+def _load_cookie(self):
+    """处理多行Cookie（自动移除换行和空格）"""
+    cookie = os.environ['TSDM_COOKIE']
+        # 移除所有空白字符并确保正确分号分隔
+    return '; '.join(
+        [x.strip() for x in cookie.split(';') if x.strip()]
+    )
 
 def tsdm_check_in():
     headers = {
@@ -39,7 +22,7 @@ def tsdm_check_in():
         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
         "Cache-Control": "max-age=0",
         "Connection": "keep-alive",
-        "Cookie": cookie,
+        "Cookie": COOKIE,
         "Referer": "https://www.tsdm39.com/forum.php",
         "Upgrade-Insecure-Requests": "1",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"
@@ -64,10 +47,9 @@ def tsdm_check_in():
         print("Check-in response:", response.text)
 
 def tsdm_work():
-    # 必须要这个content-type, 否则没法接收
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko',
-        'cookie': cookie,
+        'cookie': COOKIE,
         'connection': 'Keep-Alive',
         'x-requested-with': 'XMLHttpRequest',
         'referer': 'https://www.tsdm39.net/plugin.php?id=np_cliworkdz:work',
@@ -106,7 +88,7 @@ def get_score():
         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
         "Cache-Control": "max-age=0",
         "Connection": "keep-alive",
-        "Cookie": cookie,
+        "Cookie": COOKIE,
         "Referer": "https://www.tsdm39.com/forum.php",
         "Upgrade-Insecure-Requests": "1",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"
@@ -116,10 +98,7 @@ def get_score():
         print("Response:", response.status_code)
     soup = BeautifulSoup(response.text, 'html.parser')
     ul_element = soup.find('ul', class_='creditl')
-
     li_element = ul_element.find('li', class_='xi1')
-
-    # 获取天使币数量
     angel_coins = li_element.get_text(strip=True).replace("天使币:", "").strip()
     print("天使币数量:", angel_coins)
     return angel_coins
@@ -143,6 +122,5 @@ if __name__ == "__main__":
         else:
             print("Invalid command. Use 'checkin' or 'work'")
     else:
-        # Original behavior when no arguments are passed
         run_checkin()
         run_work()
