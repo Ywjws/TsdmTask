@@ -2,9 +2,10 @@ name: TSDM Auto Tasks
 
 on:
   schedule:
-  #定时运行6h30m运行一次
+  #定时运行6h30m运行一次work
   - cron: '30 */6 * * *'
-  
+  #每天9点签到
+  - cron: '0 1 * * *' #东八区9点  
 
 jobs:
   tsdm-tasks:
@@ -26,7 +27,7 @@ jobs:
           TSDM_COOKIE: ${{ secrets.TSDM_COOKIE }}
         run: |
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
-            if [[ "${{ github.event.schedule }}" == "0 9 * * *" ]]; then
+            if [[ "${{ github.event.schedule }}" == "0 1 * * *" ]]; then
               echo "⏰ Running daily check-in"
               python tsdm.py checkin
             elif [[ "${{ github.event.schedule }}" == "30 */6 * * *" ]]; then
