@@ -2,11 +2,9 @@ name: TSDM Auto Tasks
 
 on:
   schedule:
-                          #定时运行
-    - cron: '1 0 * * *'     #00:01
-    - cron: '31 6 * * *'    #06:31
-    - cron: '1 13 * * *'    #13:01
-    - cron: '31 19 * * *'   #19:31
+  #定时运行6h30m运行一次
+  - cron: '30 */6 * * *'
+  
 
 jobs:
   tsdm-tasks:
