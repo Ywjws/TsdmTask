@@ -6,6 +6,7 @@ on:
   - cron: '30 */6 * * *'
   #每天9点签到
   - cron: '0 1 * * *' #东八区9点  
+  workflow_dispatch:
 
 jobs:
   tsdm-tasks:
