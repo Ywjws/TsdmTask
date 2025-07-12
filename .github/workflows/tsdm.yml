@@ -1,7 +1,8 @@
 name: TSDM Auto Tasks
 
+on:
   schedule:
-    # 每6.5小时运行一次打工任务
+                          #定时运行
     - cron: '1 0 * * *'     #00:01
     - cron: '31 6 * * *'    #06:31
     - cron: '1 13 * * *'    #13:01
