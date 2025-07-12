@@ -1,12 +1,11 @@
 name: TSDM Auto Tasks
 
-on:
   schedule:
-    # Check-in daily at 09:00 UTC (17:00 CST)
-    - cron: '0 9 * * *'
-    # Work every 6 hours at :01 (UTC)
-    - cron: '1 */6 * * *'
-  workflow_dispatch:
+    # 每6.5小时运行一次打工任务
+    - cron: '1 0 * * *'     #00:01
+    - cron: '31 6 * * *'    #06:31
+    - cron: '1 13 * * *'    #13:01
+    - cron: '31 19 * * *'   #19:31
 
 jobs:
   tsdm-tasks:
